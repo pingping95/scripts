@@ -1,0 +1,11 @@
+Log
+
+##################
+Profile: default
+##################
+There is no Transit Gateway
+There is no Peering Connection
+There is no Nat Gateway
+There is no VPN
+There is no VGW
+There is no CGW
