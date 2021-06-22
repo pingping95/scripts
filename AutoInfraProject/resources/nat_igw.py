@@ -16,7 +16,7 @@ class NatIgw(Common):
 
     def run(self):
         try:
-            print(f"name: {self.name}, profile: {self.profile}, res: {self.client}")
+            print(f"name: {self.name}, profile: {self.profile}, res: {self.client}, reg : {self.region}")
             # Initialize
             self.sheet = self.wb.create_sheet(self.name)
             self.sheet.title = f"{self.name}"
