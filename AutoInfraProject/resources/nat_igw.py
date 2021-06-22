@@ -1,6 +1,7 @@
 from .settings import Common
 import openpyxl
 import boto3
+from main import log_txt
 
 class NatIgw(Common):
     def __init__(self, name, workbook, ses, info, log, is_run = False):
