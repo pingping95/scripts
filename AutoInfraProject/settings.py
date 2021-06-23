@@ -1,16 +1,12 @@
-import openpyxl
 from openpyxl.styles import Font, Side, Border, Alignment, Color, PatternFill
-import datetime
+
 
 class Common:
-    
-    # Class Attribures
-    coumt = 0
-    
     def __init__(self, name: str):
         """
         Set resource common initial settings
         """
+        self.sheet = None
         self.cell_start = 2
         self.name = name
         self.thin_border = Border(left=Side(style="thin"), right=Side(style="thin"), top=Side(style="thin"), bottom=Side(style="thin"),)
@@ -88,9 +84,3 @@ class Common:
             self.sheet.cell(row=cell_start, column=colu_index + 2).fill = PatternFill(patternType="solid", fgColor=Color("E3E3E3"))
             self.sheet.cell(row=cell_start, column=colu_index + 2).border = self.thin_border
         self.cell_start += 1
-    
-    def merge_cells(self):
-        """
-        merge multiple cells
-        """
-        pass

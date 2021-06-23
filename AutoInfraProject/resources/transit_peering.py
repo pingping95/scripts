@@ -1,22 +1,22 @@
-from .settings import Common
-import openpyxl
-import boto3
+from settings import Common
+
 
 class TransitPeering(Common):
-    def __init__(self, name, workbook, ses, info, log, is_run = False):
+    def __init__(self, name, workbook, ses, profile, region, log, is_run = False):
         Common.__init__(self, name)
         if is_run:
             self.log = log
             self.wb = workbook
-            self.profile = info.get('porfile')
-            self.region = info.get('region')
+            self.profile = profile
+            self.region = region
             self.client = ses.client(service_name="ec2", region_name=self.region)
             self.run()
 
     def run(self):
-        if len(self.client.describe_transit_gateways()["TransitGateways"]) != 0:
+        response = self.client.describe_transit_gateways()["TransitGateways"]
+        response2 = self.client.describe_vpc_peering_connections()["VpcPeeringConnections"]
+        if len(response) != 0:
             try:
-                print(f"name: {self.name}, profile: {self.profile}, res: {self.client}, reg : {self.region}")
                 # Initialize
                 self.sheet = self.wb.create_sheet(self.name)
                 self.sheet.title = f"{self.name}"
@@ -30,7 +30,7 @@ class TransitPeering(Common):
                 self.make_cell_header(self.cell_start, cell_headers)
                 
                 # For loop
-                for idx, tgw in enumerate(self.client.describe_transit_gateways()["TransitGateways"]):
+                for idx, tgw in enumerate(response):
                     # No.
                     self.add_cell(self.cell_start, 2, idx + 1)
                     # Name
@@ -56,18 +56,25 @@ class TransitPeering(Common):
                             if i != 0:
                                 tgw_cidr += ", \n"
                             tgw_cidr += cidr
-                        add_cell(sheet3, sheet3_cell_start, 7, tgw_cidr)
+                        self.add_cell(self.cell_start, 7, tgw_cidr)
                     except Exception as e:
-                        add_cell(sheet3, sheet3_cell_start, 7, "-")
+                        self.add_cell(self.cell_start, 7, "-")
                     self.cell_start += 1
             except Exception as e:
-                self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")
+                self.log.write(f"Error 발생, 리소스: TGW, 내용: {e}\n")
         else:
             self.log.write(f"There is no Transit Gateway\n")
         
-        if len(self.client.describe_vpc_peering_connections()["VpcPeeringConnections"]) != 0:
+        if len(response) == 0 and len(response2) != 0:
+            # Initialize
+            self.sheet = self.wb.create_sheet(self.name)
+            self.sheet.title = f"{self.name}"
+        if len(response2) != 0:
             try:
                 self.cell_start += 1
+                # Cell width
+                cell_widths = [5, 5, 25, 23, 22, 25, 16, 20, 22, 15, 20, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+                self.fit_cell_width(cell_widths)
                 # Header
                 self.make_header(self.cell_start, "Peering Connection")
                 cell_headers = ["No.","Name","Status","Peering Connection ID","Requester VPC ID","Requester Region",
@@ -97,7 +104,7 @@ class TransitPeering(Common):
                         self.add_cell(self.cell_start, 4, peer_status)
                         self.add_cell(self.cell_start, 11, "-")
                     # Peering Connection ID
-                    self.add_cell(sheet3, sheet3_cell_start, 5, peering.get("VpcPeeringConnectionId"))
+                    self.add_cell(self.cell_start, 5, peering.get("VpcPeeringConnectionId"))
                     # Requester
                     requester = peering.get("RequesterVpcInfo")
                     # Requester VPC ID
@@ -116,6 +123,6 @@ class TransitPeering(Common):
 
                     self.cell_start += 1
             except Exception as e:
-                self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")
+                self.log.write(f"Error 발생, 리소스: Peering Connection, 내용: {e}\n")
         else:
             self.log.write(f"There is no Peering Connection\n")

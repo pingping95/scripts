@@ -1,6 +1,4 @@
-from .settings import Common
-import openpyxl
-import boto3
+from settings import Common
 
 class Vpc(Common):
     def __init__(self, name, workbook, ses, profile, region, log, is_run = False):
@@ -12,10 +10,7 @@ class Vpc(Common):
             self.region = region
             self.resource = ses.resource(service_name="ec2")
             self.run()
-
     def run(self):
-        # try:
-        print(f"name: {self.name}, profile: {self.profile}, res: {self.resource}, reg : {self.region}")
         # Initialize
         self.sheet = self.wb.active
         self.sheet.title = self.name
@@ -42,7 +37,4 @@ class Vpc(Common):
             self.add_cell(self.cell_start, 4, vpc.id)
             # CIDR
             self.add_cell(self.cell_start, 5, vpc.cidr_block)
-            
             self.cell_start += 1
-        # except Exception as e:
-        #     self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")

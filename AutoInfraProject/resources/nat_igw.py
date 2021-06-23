@@ -1,40 +1,31 @@
-from .settings import Common
-import openpyxl
-import boto3
-from main import log_txt
+from settings import Common
 
 class NatIgw(Common):
-    def __init__(self, name, workbook, ses, info, log, is_run = False):
+    def __init__(self, name, workbook, ses, p_name, r_name, log, is_run = False):
         Common.__init__(self, name)
         if is_run:
             self.log = log
             self.wb = workbook
-            self.profile = info.get('porfile')
-            self.region = info.get('region')
+            self.profile = p_name
+            self.region = r_name
             self.client = ses.client(service_name="ec2", region_name=self.region)
             self.run()
-
     def run(self):
         try:
-            print(f"name: {self.name}, profile: {self.profile}, res: {self.client}, reg : {self.region}")
             # Initialize
             self.sheet = self.wb.create_sheet(self.name)
             self.sheet.title = f"{self.name}"
-            
             # Cell width
             cell_widths = [5, 5, 27, 22, 22, 22, 24, 20, 20, 20, 20, 20, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
             self.fit_cell_width(cell_widths)
-            
             # Header
             self.make_header(self.cell_start, "Nat Gateway")
-            
             # Cell header
             cell_headers = ["No.", "Name", "ID", "Elastic IP", "VPC", "Subnet", "Status"]
             self.make_cell_header(self.cell_start, cell_headers)
-            
             # For loop
             if len(self.client.describe_nat_gateways()["NatGateways"]) != 0:
-                for idx, vpc in enumerate(self.client.describe_nat_gateways()["NatGateways"]):
+                for idx, nat in enumerate(self.client.describe_nat_gateways()["NatGateways"]):
                     # No.
                     self.add_cell(self.cell_start, 2, idx + 1)
                     # Name
@@ -60,14 +51,11 @@ class NatIgw(Common):
             else:
                 self.log.write(f"There is no Nat Gateway\n")
             self.cell_start += 1
-            
             # Header
             self.make_header(self.cell_start, "IGW")
-            
             # Cell header
             cell_headers = ["No.", "Name", "ID", "VPC", "Status"]
             self.make_cell_header(self.cell_start, cell_headers)
-            
             if len(self.client.describe_internet_gateways()["InternetGateways"]) != 0:
                 for idx, igw in enumerate(self.client.describe_internet_gateways()["InternetGateways"]):
                     # No.
@@ -88,7 +76,6 @@ class NatIgw(Common):
                     else:
                         vpcId = "-"
                         status = "Detached"
-
                     # Name
                     self.add_cell(self.cell_start, 3, igwName)
                     # IGW ID
@@ -100,7 +87,5 @@ class NatIgw(Common):
                     self.cell_start += 1
             else:
                 self.log.write(f"There is no Internet Gateways\n")
-            
-            
         except Exception as e:
             self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")

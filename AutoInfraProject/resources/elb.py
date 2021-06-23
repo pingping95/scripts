@@ -1,16 +1,14 @@
-from .settings import Common
-import openpyxl
-import boto3
-import main
+from settings import Common
+
 
 class Elb(Common):
-    def __init__(self, name, workbook, ses, info, log, is_run = False):
+    def __init__(self, name, workbook, ses, p_name, r_name, log, is_run=False):
         Common.__init__(self, name)
         if is_run:
             self.log = log
             self.wb = workbook
-            self.profile = info.get('porfile')
-            self.region = info.get('region')
+            self.profile = p_name
+            self.region = r_name
             self.client_elb = ses.client(service_name="elb", region_name=self.region)
             self.client_elb2 = ses.client(service_name="elbv2", region_name=self.region)
             response = self.client_elb.describe_load_balancers().get("LoadBalancerDescriptions")
@@ -22,7 +20,6 @@ class Elb(Common):
 
     def run(self):
         try:
-            print(f"name: {self.name}, profile: {self.profile}, res: {self.client}, reg : {self.region}")
             # Initialize
             self.sheet = self.wb.create_sheet(self.name)
             self.sheet.title = self.name
@@ -35,15 +32,14 @@ class Elb(Common):
             cell_headers = ["No.", "Scheme", "ELB Name", "DNS Name", "Type", "Port Configuration", "Instance IDs or Target Groups",
                             "Availability Zones", "ELB Security Group", "Cross-Zone","Idle Timeout (s)", "Access Logs"]
             self.make_cell_header(self.cell_start, cell_headers)
-            
-            # 1. response
-            for idx, response in enumerate(response):
+            # 1. CLB
+            for idx, response in enumerate(self.client_elb.describe_load_balancers().get("LoadBalancerDescriptions")):
                 # No.
                 self.add_cell(self.cell_start, 2, idx + 1)
                 # Scheme
                 self.add_cell(self.cell_start, 3, str(response["Scheme"]).capitalize())
                 # ELB Name
-                self.add_cell(self.cell_start, 4, esponse["LoadBalancerName"])
+                self.add_cell(self.cell_start, 4, response["LoadBalancerName"])
                 # DNS Name
                 self.add_cell(self.cell_start, 5, response["DNSName"])
                 # Type
@@ -84,7 +80,8 @@ class Elb(Common):
                         secstr += ", \n"
                     secstr += sec
                 self.add_cell(self.cell_start, 10, secstr)
-                response_attr = elb_cli.describe_load_balancer_attributes(LoadBalancerName=ElbName)["LoadBalancerAttributes"]
+                response_attr = self.client_elb.describe_load_balancer_attributes(
+                    LoadBalancerName=response["LoadBalancerName"])["LoadBalancerAttributes"]
                 # Cross-Zone Load Balancing
                 crossZone = str(response_attr.get('CrossZoneLoadBalancing').get('Enabled')).lower().capitalize()
                 self.add_cell(self.cell_start, 11, crossZone)
@@ -93,11 +90,10 @@ class Elb(Common):
                 # Access Logs
                 access_log = str(response_attr.get('AccessLog').get('Enabled')).lower().capitalize()
                 self.add_cell(self.cell_start, 13, access_log)
-                
                 self.cell_start += 1
             
-            # 2. response2
-            for idx, response in enumerate(response2):
+            # 2. ALB, NLB, GWLB
+            for idx, response in enumerate(self.client_elb2.describe_load_balancers().get('LoadBalancers')):
                 # No.
                 self.add_cell(self.cell_start, 2, idx + 1)
                 # Scheme
@@ -123,7 +119,7 @@ class Elb(Common):
                 self.add_cell(self.cell_start, 6, str(response["Type"]).capitalize())
                 # Port Configuration
                 # Instance IDs
-                target_group = elbv2_cli.describe_target_groups(LoadBalancerArn=response["LoadBalancerArn"])
+                target_group = self.client_elb2.describe_target_groups(LoadBalancerArn=response["LoadBalancerArn"])
                 portstr = ""
                 targetstr = ""
                 try:
@@ -135,7 +131,6 @@ class Elb(Common):
                         targetstr += port.get("TargetGroupName")
                     self.add_cell(self.cell_start, 7, portstr)
                     self.add_cell(self.cell_start, 8, targetstr)
-
                 except:
                     self.add_cell(self.cell_start, 7, "-")
                     self.add_cell(self.cell_start, 8, "-")
@@ -157,7 +152,7 @@ class Elb(Common):
                 except:
                     self.add_cell(self.cell_start, 10, "-")
                 # Attributes
-                Attributes = elbv2_cli.describe_load_balancer_attributes(LoadBalancerArn=response["LoadBalancerArn"])["Attributes"]
+                Attributes = self.client_elb2.describe_load_balancer_attributes(LoadBalancerArn=response["LoadBalancerArn"])["Attributes"]
                 # GWLB : CorssZone
                 if response["Type"] == "gateway":
                     accessLogsEnabled = "-"
@@ -175,17 +170,13 @@ class Elb(Common):
                     idleTimeout = Attributes[3]["Value"]
                 # Cross Zone
                 self.add_cell(self.cell_start, 11, str(crossZoneLBEnabled).capitalize())
-
                 # IdleTimeout
                 self.add_cell(self.cell_start, 12, idleTimeout)
-
                 # Access Logs
                 try:
                     self.add_cell(self.cell_start, 13, str(accessLogsEnabled).lower().capitalize())
                 except:
                     self.add_cell(self.cell_start, 13, "-")
-
                 self.cell_start += 1
-            
         except Exception as e:
             self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
