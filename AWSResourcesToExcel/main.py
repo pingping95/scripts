@@ -6,7 +6,7 @@ from resources import vpc, nacl, subnet, routetable, transit_peering, nat_igw, v
 import os
 import datetime
 
-storing_path = f'G:\\공유 드라이브\\CSU 공유 드라이브\\팀별 공유 드라이브\\DevOps 상품 본부\\SRE2 센터\\SRE 5팀\\SMB3\\[기타] 내부공유자료\\고객사 자산 내역\\'
+storing_path = f''
 
 today = datetime.date.today()
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
             wb.save(storing_path + p_name + "_자산 내역_" + today_date + ".xlsx")
 
-            print(f"고객사 : {p_name} 자산 내역 완료")
+            print(f"{p_name} : 자산 내역 완료")
 
         except Exception as e:
             log_txt.write(f"main 문에서 Error 발생, 고객사 이름: {p_name}, 내용: {e}\n")
