@@ -84,9 +84,9 @@ class Common:
         """
         transported_type = ipType  # tcp, upd, icmp, icmpv6 or numbers
         target_dict = {22: "SSH", 25: "SMTP", 53: "DNS", 80: "HTTP", 110: "POP3", 143: "IMAP", 389: "LDAP",
-                       443: "HTTPS", 445: "SMB", 465: "SMTPS", 993: "IMAPS", 995: "POP3S", 1433: "MSSQL", 2049: "NFS",
-                       3306: "MySQL/Aurora", 3389: "RDP", 5439: "Redshift", 5432: "PostgreSQL", 1521: "Oracle-RDS",
-                       5985: "WirnRM-HTTP", 5986: "WinRM-HTTPS", 2007: "Elastic-Graphics"}
+                        443: "HTTPS", 445: "SMB", 465: "SMTPS", 993: "IMAPS", 995: "POP3S", 1433: "MSSQL", 2049: "NFS",
+                        3306: "MySQL/Aurora", 3389: "RDP", 5439: "Redshift", 5432: "PostgreSQL", 1521: "Oracle-RDS",
+                        5985: "WirnRM-HTTP", 5986: "WinRM-HTTPS", 2007: "Elastic-Graphics"}
 
         if type(number) == int:
             if number in target_dict:

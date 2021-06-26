@@ -1,0 +1,6 @@
+*.txt
+__pycache__
+test.py
+*.xlsx
+*.idea
+*.vscode
