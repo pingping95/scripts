@@ -58,4 +58,4 @@ class RouteTable(Common):
                 self.sheet.merge_cells(start_row=short_start, end_row=long_start - 1, start_column=4, end_column=4)
                 self.cell_start = long_start
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

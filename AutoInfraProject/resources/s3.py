@@ -16,7 +16,7 @@ class S3(Common):
             if len(self.client.list_buckets().get('Buckets')) != 0:
                 self.run()
             else:
-                self.log.write(f"There is no {self.name}")
+                self.log.write(f"There is no {self.name}\n")
     def run(self):
         import datetime
         from dateutil.relativedelta import relativedelta
@@ -97,8 +97,8 @@ class S3(Common):
                         self.add_cell(self.cell_start, 8, "-")
                         self.log.write(f"{bucket_name} : 비 정상적인 Bucket으로 추정", e)
                 except Exception as e:
-                    self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+                    self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")
 
                 self.cell_start += 1
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

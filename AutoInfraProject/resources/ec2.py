@@ -14,7 +14,7 @@ class Ec2(Common):
             if len(self.client.describe_instances().get("Reservations")) != 0:
                 self.run()
             else:
-                self.log.write(f"There is no {self.name}")
+                self.log.write(f"There is no {self.name}\n")
 
     def run(self):
         try:
@@ -162,4 +162,4 @@ class Ec2(Common):
                         pass
                     self.cell_start += 1
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

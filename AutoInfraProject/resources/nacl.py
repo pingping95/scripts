@@ -166,4 +166,4 @@ class Nacl(Common):
                 self.sheet.merge_cells(start_row=acl_start_row, end_row=acl_end_row, start_column=5, end_column=5)            
             
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

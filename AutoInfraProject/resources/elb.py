@@ -16,7 +16,7 @@ class Elb(Common):
             if len(response) != 0 or len(response2) != 0:
                 self.run()
             else:
-                self.log.write(f"There is no {self.name}")
+                self.log.write(f"There is no {self.name}\n")
 
     def run(self):
         try:
@@ -179,4 +179,4 @@ class Elb(Common):
                     self.add_cell(self.cell_start, 13, "-")
                 self.cell_start += 1
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

@@ -54,4 +54,4 @@ class CW(Common):
                 self.cell_start += 1
 
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

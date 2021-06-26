@@ -88,4 +88,4 @@ class NatIgw(Common):
             else:
                 self.log.write(f"There is no Internet Gateways\n")
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

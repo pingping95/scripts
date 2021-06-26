@@ -13,7 +13,7 @@ class CT(Common):
             if len(self.client.describe_trails()["trailList"]) != 0:
                 self.run()
             else:
-                self.log.write(f"There is no {self.name}")
+                self.log.write(f"There is no {self.name}\n")
 
     def run(self):
         try:
@@ -29,7 +29,7 @@ class CT(Common):
             cell_headers = ["No.", "Trail name", "Home Region", "Multi-region Trail", "Trail Insights",
                             "Organization Trail", "S3 bucket"]
             self.make_cell_header(self.cell_start, cell_headers)
-            # CF
+            # CT
             for idx, trail in enumerate(self.client.describe_trails()["trailList"]):
                 self.add_cell(self.cell_start, 2, idx + 1)
                 self.add_cell(self.cell_start, 3, trail.get("Name"))
@@ -40,4 +40,4 @@ class CT(Common):
                 self.add_cell(self.cell_start, 8, trail.get("S3BucketName"))
                 self.cell_start += 1
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")

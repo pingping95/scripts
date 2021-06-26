@@ -1,5 +1,6 @@
 from settings import Common
 
+
 class Vpc(Common):
     def __init__(self, name, workbook, ses, profile, region, log, is_run = False):
         Common.__init__(self, name)
@@ -10,6 +11,7 @@ class Vpc(Common):
             self.region = region
             self.resource = ses.resource(service_name="ec2")
             self.run()
+
     def run(self):
         # Initialize
         self.sheet = self.wb.active

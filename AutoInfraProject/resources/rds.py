@@ -14,7 +14,7 @@ class RDS(Common):
             if len(self.client.describe_db_instances().get('DBInstances')) != 0:
                 self.run()
             else:
-                self.log.write(f"There is no {self.name}")
+                self.log.write(f"There is no {self.name}\n")
 
     def run(self):
         try:
@@ -77,4 +77,4 @@ class RDS(Common):
                 self.add_cell(self.cell_start, 18, rdsdata["BackupRetentionPeriod"])
                 self.cell_start += 1
         except Exception as e:
-            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}")
+            self.log.write(f"Error 발생, 리소스: {self.name}, 내용: {e}\n")
