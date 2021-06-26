@@ -6,7 +6,7 @@ from resources import vpc, nacl, subnet, routetable, transit_peering, nat_igw, v
 import os
 import datetime
 
-storing_path = f'G:\\공유 드라이브\\CSU 공유 드라이브\\팀별 공유 드라이브\\DevOps 상품 본부\\SRE2 센터\\SRE 5팀\\SMB3\\[기타] 내부공유자료\\고객사 자산 내역\\'
+storing_path = f''
 
 today = datetime.date.today()
 
